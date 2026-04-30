@@ -456,7 +456,7 @@ Use """ to write multi-line messages.
 
     ### Set some helpful settings we know are likely to be true
 
-    if interpreter.llm.model == "gpt-4" or interpreter.llm.model == "openai/gpt-4":
+    if interpreter.llm.model == "gpt-4":
         if interpreter.llm.context_window is None:
             interpreter.llm.context_window = 6500
         if interpreter.llm.max_tokens is None:
@@ -466,9 +466,7 @@ Use """ to write multi-line messages.
                 False if "vision" in interpreter.llm.model else True
             )
 
-    elif interpreter.llm.model.startswith("gpt-4") or interpreter.llm.model.startswith(
-        "openai/gpt-4"
-    ):
+    elif interpreter.llm.model.startswith("gpt-4"):
         if interpreter.llm.context_window is None:
             interpreter.llm.context_window = 123000
         if interpreter.llm.max_tokens is None:
@@ -478,9 +476,7 @@ Use """ to write multi-line messages.
                 False if "vision" in interpreter.llm.model else True
             )
 
-    if interpreter.llm.model.startswith(
-        "gpt-3.5-turbo"
-    ) or interpreter.llm.model.startswith("openai/gpt-3.5-turbo"):
+    if interpreter.llm.model.startswith("gpt-3.5-turbo"):
         if interpreter.llm.context_window is None:
             interpreter.llm.context_window = 16000
         if interpreter.llm.max_tokens is None:
@@ -489,17 +485,6 @@ Use """ to write multi-line messages.
             interpreter.llm.supports_functions = True
 
     if interpreter.llm.api_base:
-        if (
-            not interpreter.llm.model.lower().startswith("openai/")
-            and not interpreter.llm.model.lower().startswith("azure/")
-            and not interpreter.llm.model.lower().startswith("ollama")
-            and not interpreter.llm.model.lower().startswith("jan")
-            and not interpreter.llm.model.lower().startswith("local")
-        ):
-            interpreter.llm.model = "openai/" + interpreter.llm.model
-        elif interpreter.llm.model.lower().startswith("jan/"):
-            # Strip jan/ from the model name
-            interpreter.llm.model = interpreter.llm.model[4:]
         # Custom servers may not support tool calling; default to text mode
         # unless the user has explicitly configured supports_functions.
         if interpreter.llm.supports_functions is None:
