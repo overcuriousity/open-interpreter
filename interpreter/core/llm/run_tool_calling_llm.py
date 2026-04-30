@@ -176,30 +176,32 @@ def run_tool_calling_llm(llm, request_params):
     buffer = ""
 
     for chunk in llm.completions(**request_params):
-        if "choices" not in chunk or len(chunk["choices"]) == 0:
-            # This happens sometimes
+        if not chunk.choices:
             continue
 
-        delta = chunk["choices"][0]["delta"]
+        delta_obj = chunk.choices[0].delta
 
         # Convert tool call into function call, which we have great parsing logic for below
-        if "tool_calls" in delta and delta["tool_calls"]:
+        if delta_obj.tool_calls:
             function_call_detected = True
-
-            # import pdb; pdb.set_trace()
-            if len(delta["tool_calls"]) > 0 and delta["tool_calls"][0].function:
+            tc = delta_obj.tool_calls[0]
+            if tc.function:
                 delta = {
-                    # "id": delta["tool_calls"][0],
                     "function_call": {
-                        "name": delta["tool_calls"][0].function.name,
-                        "arguments": delta["tool_calls"][0].function.arguments,
+                        "name": tc.function.name,
+                        "arguments": tc.function.arguments,
                     }
                 }
+            else:
+                delta = {}
+        else:
+            # Convert ChoiceDelta to a plain dict for merge_deltas
+            delta = {k: v for k, v in dict(delta_obj).items() if v is not None}
 
         # Accumulate deltas
         accumulated_deltas = merge_deltas(accumulated_deltas, delta)
 
-        if "content" in delta and delta["content"]:
+        if delta.get("content"):
             if function_call_detected:
                 # More content after a code block? This is a code review by a judge layer.
 
