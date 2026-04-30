@@ -246,6 +246,7 @@ def openai_completions(**params):
     client = openai.OpenAI(
         api_key=api_key,
         base_url=api_base or None,
+        timeout=60.0,
     )
 
     attempts = 4
