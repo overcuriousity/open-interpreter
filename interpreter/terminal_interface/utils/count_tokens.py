@@ -1,6 +1,5 @@
 try:
     import tiktoken
-    from litellm import cost_per_token
 except:
     # Non-essential feature
     pass
@@ -31,17 +30,7 @@ def count_tokens(text="", model="gpt-4"):
 
 
 def token_cost(tokens=0, model="gpt-4"):
-    """
-    Calculate the cost of the current number of tokens
-    """
-
-    try:
-        (prompt_cost, _) = cost_per_token(model=model, prompt_tokens=tokens)
-
-        return round(prompt_cost, 6)
-    except:
-        # Non-essential feature
-        return 0
+    return 0
 
 
 def count_messages_tokens(messages=[], model=None):

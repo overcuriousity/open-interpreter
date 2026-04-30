@@ -4,8 +4,7 @@ import re
 import time
 import traceback
 
-os.environ["LITELLM_LOCAL_MODEL_COST_MAP"] = "True"
-import litellm
+import openai
 
 from ..terminal_interface.utils.display_markdown_message import display_markdown_message
 from .render_message import render_message
@@ -87,18 +86,6 @@ def respond(interpreter):
                 for chunk in interpreter.llm.run(messages_for_llm):
                     yield {"role": "assistant", **chunk}
 
-            except litellm.exceptions.BudgetExceededError:
-                interpreter.display_message(
-                    f"""> Max budget exceeded
-
-                    **Session spend:** ${litellm._current_cost}
-                    **Max budget:** ${interpreter.max_budget}
-
-                    Press CTRL-C then run `interpreter --max_budget [higher USD amount]` to proceed.
-                """
-                )
-                break
-
             except Exception as e:
                 error_message = str(e).lower()
                 if (
@@ -111,10 +98,10 @@ def respond(interpreter):
                     # issues were struggling with this)
                     output = traceback.format_exc()
                     raise Exception(
-                        f"{output}\n\nThere might be an issue with your API key(s).\n\nTo reset your API key (we'll use OPENAI_API_KEY for this example, but you may need to reset your ANTHROPIC_API_KEY, HUGGINGFACE_API_KEY, etc):\n        Mac/Linux: 'export OPENAI_API_KEY=your-key-here'. Update your ~/.zshrc on MacOS or ~/.bashrc on Linux with the new key if it has already been persisted there.,\n        Windows: 'setx OPENAI_API_KEY your-key-here' then restart terminal.\n\n"
+                        f"{output}\n\nThere might be an issue with your API key.\n\nTo reset your API key:\n        Mac/Linux: 'export OPENAI_API_KEY=your-key-here'\n        Windows: 'setx OPENAI_API_KEY your-key-here' then restart terminal.\n\n"
                     )
                 elif (
-                    isinstance(e, litellm.exceptions.RateLimitError)
+                    ("rate limit" in error_message or isinstance(e, openai.RateLimitError))
                     and ("exceeded" in str(e).lower() or
                          "insufficient_quota" in str(e).lower())
                 ):

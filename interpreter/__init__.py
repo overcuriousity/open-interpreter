@@ -28,25 +28,6 @@ if "--os" in sys.argv:
             # Aesthetic choice. For these tags, they need a space below them
             print("")
 
-    from importlib.metadata import version
-    import requests
-    from packaging import version
-
-    def check_for_update():
-        # Fetch the latest version from the PyPI API
-        response = requests.get(f"https://pypi.org/pypi/open-interpreter/json")
-        latest_version = response.json()["info"]["version"]
-
-        # Get the current version using importlib.metadata
-        current_version = version("open-interpreter")
-
-        return version.parse(latest_version) > version.parse(current_version)
-
-    if check_for_update():
-        print_markdown(
-            "> **A new version of Open Interpreter is available.**\n>Please run: `pip install --upgrade open-interpreter`\n\n---"
-        )
-
     if "--voice" in sys.argv:
         print("Coming soon...")
     from .computer_use.loop import run_async_main

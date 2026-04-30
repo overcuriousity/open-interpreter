@@ -19,7 +19,6 @@ except ImportError:  # 3.10 compatibility
 
 from typing import Any, List, cast
 
-import requests
 from anthropic import Anthropic, AnthropicBedrock, AnthropicVertex, APIResponse
 from anthropic.types import ToolResultBlockParam
 from anthropic.types.beta import (
@@ -470,24 +469,6 @@ Move your mouse to any corner of the screen to exit.
         print()
         if user_input.lower() in ["exit", "quit", "q"]:
             break
-        elif user_input.lower() in ["d"]:
-            print_markdown(
-                "---\nTo get early access to the **Open Interpreter Desktop App**, please provide the following information:\n"
-            )
-            first_name = input("What's your first name? ").strip()
-            email = input("What's your email? ").strip()
-
-            url = "https://neyguovvcjxfzhqpkicj.supabase.co/functions/v1/addEmailToWaitlist"
-            data = {"first_name": first_name, "email": email}
-
-            try:
-                response = requests.post(url, json=data)
-            except requests.RequestException as e:
-                pass
-
-            print_markdown("\nWe'll email you shortly. ✓\n---\n")
-            continue
-
         messages.append(
             {"role": "user", "content": [{"type": "text", "text": user_input}]}
         )

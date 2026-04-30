@@ -1,8 +1,6 @@
-import threading
 import time
 
 import html2text
-import requests
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
@@ -24,43 +22,6 @@ class Browser:
     @driver.setter
     def driver(self, value):
         self._driver = value
-
-    def search(self, query):
-        """
-        Searches the web for the specified query and returns the results.
-        """
-        response = requests.get(
-            f'{self.computer.api_base.strip("/")}/browser/search',
-            params={"query": query},
-        )
-        return response.json()["result"]
-
-    def fast_search(self, query):
-        """
-        Searches the web for the specified query and returns the results.
-        """
-
-        # Start the request in a separate thread
-        response_thread = threading.Thread(
-            target=lambda: setattr(
-                threading.current_thread(),
-                "response",
-                requests.get(
-                    f'{self.computer.api_base.strip("/")}/browser/search',
-                    params={"query": query},
-                ),
-            )
-        )
-        response_thread.start()
-
-        # Perform the Google search
-        self.search_google(query, delays=False)
-
-        # Wait for the request to complete and get the result
-        response_thread.join()
-        response = response_thread.response
-
-        return response.json()["result"]
 
     def setup(self, headless):
         try:

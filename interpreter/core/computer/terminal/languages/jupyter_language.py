@@ -13,8 +13,7 @@ import threading
 import time
 import traceback
 
-os.environ["LITELLM_LOCAL_MODEL_COST_MAP"] = "True"
-import litellm
+import openai
 from jupyter_client import KernelManager
 
 from ..base_language import BaseLanguage
@@ -176,11 +175,13 @@ import matplotlib.pyplot as plt
                             "stream": True,
                             "temperature": 0,
                         }
-                        if self.computer.interpreter.llm.api_key:
-                            params["api_key"] = self.computer.interpreter.llm.api_key
-
+                        llm = self.computer.interpreter.llm
+                        client = openai.OpenAI(
+                            api_key=llm.api_key or "x",
+                            base_url=llm.api_base or None,
+                        )
                         response = ""
-                        for chunk in litellm.completion(**params):
+                        for chunk in client.chat.completions.create(**params):
                             content = chunk.choices[0].delta.content
                             if type(content) == str:
                                 response += content
