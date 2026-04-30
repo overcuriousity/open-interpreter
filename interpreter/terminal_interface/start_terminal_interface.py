@@ -500,6 +500,10 @@ Use """ to write multi-line messages.
         elif interpreter.llm.model.lower().startswith("jan/"):
             # Strip jan/ from the model name
             interpreter.llm.model = interpreter.llm.model[4:]
+        # Custom servers may not support tool calling; default to text mode
+        # unless the user has explicitly configured supports_functions.
+        if interpreter.llm.supports_functions is None:
+            interpreter.llm.supports_functions = False
 
     # If --conversations is used, run conversation_navigator
     if args.conversations:
